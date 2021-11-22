@@ -319,10 +319,14 @@ public class JDBCConnection implements BackendConnection {
 		}
 
 		try {
-//			if (orgin.startsWith("/* mysql-connector-java-")) {
-//				orgin = "select 1 from dual";
-//			}
-//			else {
+			if ("ORACLE".equals(dbType))  {
+				if (orgin.startsWith("/* mysql-connector-java-")) {
+					orgin = "select 1 from dual";
+				}
+				if (orgin.startsWith("select version()")) {
+					orgin = "select 1 from dual";
+				}
+			}
 			syncIsolation(sc.getTxIsolation());
 			syncTxReadonly(sc.isTxReadonly());
 			if (!this.schema.equals(this.oldSchema)) {
@@ -361,7 +365,6 @@ public class JDBCConnection implements BackendConnection {
 			} else {
 				executeddl(sc, orgin);
 			}
-//		}
 		} catch (SQLException e) {
 
 			String msg = e.getMessage();
